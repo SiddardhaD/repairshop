@@ -68,14 +68,38 @@ class DashboardScreen extends ConsumerWidget {
             _buildActiveRepairsSection(context, ref, repairsAsync),
             Spacing.gapXS,
             _buildFeaturedVendorsSection(context, ref, featuredVendorsAsync),
-            Spacing.gapXS,
+            const SizedBox(height: 32),
+            _buildSwiggyStyleSection(context),
+            const SizedBox(height: 24),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push(RouteNames.addRepair),
-        icon: const Icon(Icons.add),
-        label: const Text('Add Repair'),
+      floatingActionButton: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          gradient: const LinearGradient(
+            colors: [AppColors.gradientStart, AppColors.gradientEnd],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.primaryBlue.withOpacity(0.4),
+              blurRadius: 16,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: FloatingActionButton.extended(
+          onPressed: () => context.push(RouteNames.addRepair),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          icon: const Icon(Icons.add_circle_outline, size: 24),
+          label: const Text(
+            'Add Repair',
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+          ),
+        ),
       ),
     );
   }
@@ -174,6 +198,12 @@ class DashboardScreen extends ConsumerWidget {
 
   Widget _buildPromotionSection(BuildContext context) {
     final promotions = MockDataService().getMockPromotions();
+    // Map of promo images to cycle through
+    final promoImages = [
+      'assets/images/promo_mobile.png',
+      'assets/images/promo_ac.png',
+      'assets/images/promo_home.png',
+    ];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -196,7 +226,8 @@ class DashboardScreen extends ConsumerWidget {
             itemCount: promotions.length,
             itemBuilder: (context, index) {
               final promotion = promotions[index];
-              return _buildPromotionCard(context, promotion);
+              final imageAsset = promoImages[index % promoImages.length];
+              return _buildPromotionCard(context, promotion, imageAsset);
             },
           ),
         ),
@@ -204,7 +235,11 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildPromotionCard(BuildContext context, Promotion promotion) {
+  Widget _buildPromotionCard(
+    BuildContext context,
+    Promotion promotion,
+    String imageAsset,
+  ) {
     return SizedBox(
       width: 300,
       child: Card(
@@ -218,18 +253,11 @@ class DashboardScreen extends ConsumerWidget {
               children: [
                 Container(
                   height: 80,
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [AppColors.primaryBlue, AppColors.primaryLight],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                  ),
-                  child: const Center(
-                    child: Icon(
-                      Icons.local_offer,
-                      size: 40,
-                      color: Colors.white,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage(imageAsset),
+                      fit: BoxFit.cover,
                     ),
                   ),
                 ),
@@ -509,6 +537,15 @@ class DashboardScreen extends ConsumerWidget {
     WidgetRef ref,
     AsyncValue<List<Vendor>> featuredVendorsAsync,
   ) {
+    // Vendor service images
+    final vendorImages = [
+      'assets/images/vendor_1.png',
+      'assets/images/vendor_2.png',
+      'assets/images/vendor_3.png',
+      'assets/images/vendor_4.png',
+      'assets/images/vendor_5.png',
+    ];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -528,13 +565,13 @@ class DashboardScreen extends ConsumerWidget {
               height: 160,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                padding: Spacing.horizontalXS,
+                // padding: Spacing.horizontalXS,
                 itemCount: vendors.length,
                 itemBuilder: (context, index) {
                   final vendor = vendors[index];
-                  return Container(
+                  final vendorImage = vendorImages[index % vendorImages.length];
+                  return SizedBox(
                     width: 250,
-                    margin: const EdgeInsets.only(right: 12),
                     child: Card(
                       child: Padding(
                         padding: const EdgeInsets.all(12),
@@ -544,14 +581,12 @@ class DashboardScreen extends ConsumerWidget {
                           children: [
                             Row(
                               children: [
-                                CircleAvatar(
-                                  radius: 20,
-                                  backgroundColor: AppColors.primaryBlue
-                                      .withAlpha(25),
-                                  child: const Icon(
-                                    Icons.store,
-                                    color: AppColors.primaryBlue,
-                                    size: 20,
+                                ClipOval(
+                                  child: Image.asset(
+                                    vendorImage,
+                                    width: 40,
+                                    height: 40,
+                                    fit: BoxFit.cover,
                                   ),
                                 ),
                                 Spacing.gapSM,
@@ -636,6 +671,131 @@ class DashboardScreen extends ConsumerWidget {
             message: error.toString(),
             onRetry: () => ref.invalidate(featuredVendorsProvider),
           ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSwiggyStyleSection(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 24),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            AppColors.primaryBlue.withOpacity(0.05),
+            AppColors.accentTeal.withOpacity(0.05),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: AppColors.primaryBlue.withOpacity(0.1),
+          width: 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppColors.primaryBlue.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: const Icon(
+                  Icons.favorite,
+                  color: AppColors.error,
+                  size: 28,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Love your gadgets?',
+                      style: Theme.of(context).textTheme.headlineMedium
+                          ?.copyWith(fontWeight: FontWeight.bold, height: 1.2),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'We\'ll keep them running like new! ⚡',
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: AppColors.textSecondary,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 18),
+          Row(
+            children: [
+              Expanded(
+                child: _buildQuickStat(
+                  context,
+                  '1000+',
+                  'Happy Customers',
+                  Icons.people_outline,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: _buildQuickStat(
+                  context,
+                  '24/7',
+                  'Support',
+                  Icons.support_agent_outlined,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: _buildQuickStat(
+                  context,
+                  '95%',
+                  'Success Rate',
+                  Icons.verified_outlined,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuickStat(
+    BuildContext context,
+    String value,
+    String label,
+    IconData icon,
+  ) {
+    return Column(
+      children: [
+        Icon(icon, size: 24, color: AppColors.primaryBlue),
+        const SizedBox(height: 8),
+        Text(
+          value,
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+            // color: AppColors.textPrimary,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
+          textAlign: TextAlign.center,
+          maxLines: 2,
         ),
       ],
     );

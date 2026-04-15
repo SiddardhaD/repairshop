@@ -17,8 +17,8 @@ class LoginScreen extends ConsumerStatefulWidget {
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _phoneController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final _phoneController = TextEditingController(text: '9985091823');
+  final _passwordController = TextEditingController(text: 'Test123');
   bool _isLoading = false;
 
   @override
@@ -34,10 +34,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     setState(() => _isLoading = true);
 
     try {
-      await ref.read(authNotifierProvider.notifier).login(
-            _phoneController.text.trim(),
-            _passwordController.text,
-          );
+      await ref
+          .read(authNotifierProvider.notifier)
+          .login(_phoneController.text.trim(), _passwordController.text);
 
       if (!mounted) return;
 
@@ -78,8 +77,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   Text(
                     'Welcome Back!',
                     style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      fontWeight: FontWeight.bold,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   Spacing.gapSM,
